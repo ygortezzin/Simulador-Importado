@@ -489,7 +489,7 @@
     </div>
     <div class="meta-card">
       <label>Volume (m³)</label>
-      <input type="number" id="volume" placeholder="0" min="1" step="1" required />
+      <input type="number" id="volume" placeholder="1" min="1" step="1" />
     </div>
   </div>
 
@@ -560,6 +560,7 @@
     <div style="text-align:right">
       <div class="fob-value" id="fob">—</div>
       <div class="fob-total-brl" id="fob-total"></div>
+      <div class="fob-total-brl" id="fob-total-1000"></div>
     </div>
   </div>
 
@@ -572,6 +573,7 @@
     <div style="text-align:right">
       <div class="fob-value" id="paulinia">—</div>
       <div class="fob-total-brl" id="paulinia-total"></div>
+      <div class="fob-total-brl" id="paulinia-total-1000"></div>
     </div>
   </div>
 
@@ -595,12 +597,13 @@
 
   function calc() {
     const rbob   = parseFloat($('rbob').value)   || 0;
-    const fee    = parseFloat($('fee').value)    || 0;
+    const fee    = parseFloat(($('fee').value || '').replace(',', '.')) || 0;
     const fx     = parseFloat($('fx').value)     || 0;
     const custos = parseFloat($('custos').value) || 0;
     const icms   = parseFloat($('icms').value)   || 0;
     const pis    = parseFloat($('pis').value)    || 0;
-    const vol    = parseFloat($('volume').value) || 0;
+    const volRaw = parseFloat($('volume').value);
+    const vol    = (!isNaN(volRaw) && volRaw > 0) ? volRaw : 1;
 
     const total    = rbob + fee;
     const cbm      = total * 0.264172;
@@ -615,8 +618,10 @@
     $('encargos').textContent = fmt(encargos);
     $('fob').textContent      = fmt(fob_L);
     $('fob-total').textContent = `Total (${vol} m³): R$ ${fmtBRL(fob_L * vol)}`;
+    $('fob-total-1000').textContent = `Total (${vol} m³ × 1.000): R$ ${fmtBRL(fob_L * vol * 1000)}`;
     $('paulinia').textContent  = fmt(paul_L);
     $('paulinia-total').textContent = `Total (${vol} m³): R$ ${fmtBRL(paul_L * vol)}`;
+    $('paulinia-total-1000').textContent = `Total (${vol} m³ × 1.000): R$ ${fmtBRL(paul_L * vol * 1000)}`;
 
     ['fob-block','paulinia-block'].forEach(id => {
       const el = $(id);
@@ -848,10 +853,11 @@
     const custos = parseFloat($('custos').value) || 0;
     const icms   = parseFloat($('icms').value)   || 0;
     const pis    = parseFloat($('pis').value)    || 0;
-    const vol    = parseFloat($('volume').value);
+    const volRaw = parseFloat($('volume').value);
+    const vol    = (!isNaN(volRaw) && volRaw > 0) ? volRaw : 1;
 
-    // Se campos obrigatórios não preenchidos, mostra traço
-    const obrigatoriosOk = !isNaN(rbob) && !isNaN(fee) && !isNaN(fx) && !isNaN(vol) && vol > 0;
+    // Volume é opcional (considera 1 quando em branco); demais campos continuam obrigatórios
+    const obrigatoriosOk = !isNaN(rbob) && !isNaN(fee) && !isNaN(fx);
 
     if (!obrigatoriosOk) {
       $('total').textContent    = '—';
@@ -861,7 +867,9 @@
       $('fob').textContent      = '—';
       $('paulinia').textContent = '—';
       $('fob-total').textContent    = '';
+      $('fob-total-1000').textContent = '';
       $('paulinia-total').textContent = '';
+      $('paulinia-total-1000').textContent = '';
       return;
     }
 
@@ -877,9 +885,11 @@
     $('brl').textContent      = fmt(brl);
     $('encargos').textContent = fmt(encargos);
     $('fob').textContent      = fmt(fob_L);
-    $('fob-total').textContent = `Total (${vol} m³): R$ ${fmtBRL(fob_L * vol * 1000)}`;
+    $('fob-total').textContent = `Total (${vol} m³): R$ ${fmtBRL(fob_L * vol)}`;
+    $('fob-total-1000').textContent = `Total (${vol} m³ × 1.000): R$ ${fmtBRL(fob_L * vol * 1000)}`;
     $('paulinia').textContent  = fmt(paul_L);
-    $('paulinia-total').textContent = `Total (${vol} m³): R$ ${fmtBRL(paul_L * vol * 1000)}`;
+    $('paulinia-total').textContent = `Total (${vol} m³): R$ ${fmtBRL(paul_L * vol)}`;
+    $('paulinia-total-1000').textContent = `Total (${vol} m³ × 1.000): R$ ${fmtBRL(paul_L * vol * 1000)}`;
 
     ['fob-block','paulinia-block'].forEach(id => {
       const el = $(id);
