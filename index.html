@@ -586,10 +586,6 @@
       <div class="row-label bold">Spread (Importado − Nacional)</div>
       <div class="row-value" id="bombeio-spread">—</div>
     </div>
-    <div class="row">
-      <div class="row-label"><span class="dot gray"></span> Total Nacional <small>(vol × 1.000)</small></div>
-      <div class="row-value" id="bombeio-total">—</div>
-    </div>
   </div>
 
   <button class="btn-save" id="btn-save" onclick="salvarImagem()">
@@ -883,7 +879,6 @@
       $('paulinia-total').textContent = '';
       $('bombeio-valor').textContent  = '—';
       $('bombeio-spread').textContent = '—';
-      $('bombeio-total').textContent  = '—';
       return;
     }
 
@@ -986,26 +981,22 @@
   function atualizarComparativoBombeio(paul_L, vol) {
     const produto = $('produto').value;
     const info = bombeioData && bombeioData.produtos && bombeioData.produtos[produto];
-    const precoM3 = info ? Number(info.paulinia) : null;
+    const bombeio_L = info ? Number(info.paulinia) : null;
 
     $('bombeio-data-ref').textContent = bombeioData && bombeioData.atualizado_em
       ? `(atualizado em ${bombeioData.atualizado_em})` : '';
 
-    if (!precoM3 || precoM3 <= 0) {
+    if (!bombeio_L || bombeio_L <= 0) {
       $('bombeio-valor').textContent  = 'sem dado';
       $('bombeio-spread').textContent = '—';
-      $('bombeio-total').textContent  = '—';
       return;
     }
 
-    const bombeio_L = precoM3 / 1000; // base vem em R$/m³, simulador trabalha em R$/L
-    const spread     = paul_L - bombeio_L;
-    const spreadPct  = (spread / bombeio_L) * 100;
-    const spreadEl   = $('bombeio-spread');
+    const spread   = paul_L - bombeio_L;
+    const spreadEl = $('bombeio-spread');
 
     $('bombeio-valor').textContent  = fmt(bombeio_L);
-    $('bombeio-total').textContent  = `R$ ${fmtBRL(bombeio_L * vol * 1000)}`;
-    spreadEl.textContent = `${spread >= 0 ? '+' : ''}${fmt(spread)}  (${spreadPct >= 0 ? '+' : ''}${spreadPct.toFixed(1)}%)`;
+    spreadEl.textContent = `${spread >= 0 ? '+' : ''}${fmt(spread)}`;
     spreadEl.classList.toggle('warn', spread > 0);
     spreadEl.classList.toggle('blue', spread <= 0);
   }

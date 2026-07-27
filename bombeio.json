@@ -1,23 +1,19 @@
 {
   "atualizado_em": "2026-07-27",
-  "unidade": "R$/m3",
+  "unidade": "R$/L",
   "fonte": "Petrobras - Preço de venda às distribuidoras (bombeio)",
   "produtos": {
     "gasolina": {
       "nome": "Gasolina A",
-      "paulinia": 5.75620
-
+      "paulinia": 0
     },
     "s10": {
       "nome": "Diesel S10",
-      "paulinia": 4.92140
-
+      "paulinia": 0
     },
     "s500": {
       "nome": "Diesel S500",
-      "paulinia": 4.85320
-
+      "paulinia": 0
     }
   }
 }
-
