@@ -272,6 +272,27 @@
   }
   .row-input:focus { border-color: var(--blue); }
 
+  .input-with-sign {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .sign-toggle {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--blue);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    width: 24px;
+    height: 24px;
+    line-height: 1;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .sign-toggle.negative { color: #c0392b; border-color: #c0392b; background: #fbeae7; }
+
   /* ── DOT ── */
   .dot {
     width: 5px; height: 5px;
@@ -481,7 +502,10 @@
     </div>
     <div class="row">
       <div class="row-label"><span class="dot red"></span> FEE</div>
-      <input class="row-input" id="fee" type="number" placeholder="0,0000" step="0.0001" required />
+      <div class="input-with-sign">
+        <button type="button" class="sign-toggle" id="fee-sign" onclick="toggleFeeSign()">+</button>
+        <input class="row-input" id="fee" type="text" inputmode="decimal" placeholder="0,0000" required />
+      </div>
     </div>
     <div class="row highlight">
       <div class="row-label bold">TOTAL</div>
@@ -819,7 +843,7 @@
 
   function calc() {
     const rbob   = parseFloat($('rbob').value);
-    const fee    = parseFloat($('fee').value);
+    const fee    = parseFloat($('fee').value.replace(',', '.'));
     const fx     = parseFloat($('fx').value);
     const custos = parseFloat($('custos').value) || 0;
     const icms   = parseFloat($('icms').value)   || 0;
@@ -885,6 +909,39 @@
 
     calc();
   }
+
+  function toggleFeeSign() {
+    const input = $('fee');
+    const btn = $('fee-sign');
+    let v = input.value.trim();
+    if (v.startsWith('-')) {
+      v = v.slice(1);
+      btn.textContent = '+';
+      btn.classList.remove('negative');
+    } else {
+      v = v ? '-' + v : '-';
+      btn.textContent = '−';
+      btn.classList.add('negative');
+    }
+    input.value = v;
+    calc();
+  }
+
+  // Permite apenas dígitos, um separador decimal e o sinal de menos no início
+  $('fee').addEventListener('input', () => {
+    const input = $('fee');
+    const btn = $('fee-sign');
+    let v = input.value;
+    const negative = v.trim().startsWith('-');
+    v = v.replace(/[^0-9.,]/g, '');
+    const firstSep = v.search(/[.,]/);
+    if (firstSep !== -1) {
+      v = v.slice(0, firstSep + 1) + v.slice(firstSep + 1).replace(/[.,]/g, '');
+    }
+    input.value = negative ? '-' + v : v;
+    btn.textContent = negative ? '−' : '+';
+    btn.classList.toggle('negative', negative);
+  });
 
   const inputs = ['rbob','fee','fx','custos','icms','pis','volume'];
   inputs.forEach(id => $(id).addEventListener('input', calc));
