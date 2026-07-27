@@ -560,7 +560,6 @@
     <div style="text-align:right">
       <div class="fob-value" id="fob">—</div>
       <div class="fob-total-brl" id="fob-total"></div>
-      <div class="fob-total-brl" id="fob-total-1000"></div>
     </div>
   </div>
 
@@ -573,7 +572,6 @@
     <div style="text-align:right">
       <div class="fob-value" id="paulinia">—</div>
       <div class="fob-total-brl" id="paulinia-total"></div>
-      <div class="fob-total-brl" id="paulinia-total-1000"></div>
     </div>
   </div>
 
@@ -617,11 +615,9 @@
     $('brl').textContent      = fmt(brl);
     $('encargos').textContent = fmt(encargos);
     $('fob').textContent      = fmt(fob_L);
-    $('fob-total').textContent = `Total (${vol} m³): R$ ${fmtBRL(fob_L * vol)}`;
-    $('fob-total-1000').textContent = `Total (${vol} m³ × 1.000): R$ ${fmtBRL(fob_L * vol * 1000)}`;
+    $('fob-total').textContent = `Total (${vol} m³): R$ ${fmtBRL(fob_L * vol * 1000)}`;
     $('paulinia').textContent  = fmt(paul_L);
-    $('paulinia-total').textContent = `Total (${vol} m³): R$ ${fmtBRL(paul_L * vol)}`;
-    $('paulinia-total-1000').textContent = `Total (${vol} m³ × 1.000): R$ ${fmtBRL(paul_L * vol * 1000)}`;
+    $('paulinia-total').textContent = `Total (${vol} m³): R$ ${fmtBRL(paul_L * vol * 1000)}`;
 
     ['fob-block','paulinia-block'].forEach(id => {
       const el = $(id);
@@ -867,9 +863,7 @@
       $('fob').textContent      = '—';
       $('paulinia').textContent = '—';
       $('fob-total').textContent    = '';
-      $('fob-total-1000').textContent = '';
       $('paulinia-total').textContent = '';
-      $('paulinia-total-1000').textContent = '';
       return;
     }
 
@@ -885,11 +879,9 @@
     $('brl').textContent      = fmt(brl);
     $('encargos').textContent = fmt(encargos);
     $('fob').textContent      = fmt(fob_L);
-    $('fob-total').textContent = `Total (${vol} m³): R$ ${fmtBRL(fob_L * vol)}`;
-    $('fob-total-1000').textContent = `Total (${vol} m³ × 1.000): R$ ${fmtBRL(fob_L * vol * 1000)}`;
+    $('fob-total').textContent = `Total (${vol} m³): R$ ${fmtBRL(fob_L * vol * 1000)}`;
     $('paulinia').textContent  = fmt(paul_L);
-    $('paulinia-total').textContent = `Total (${vol} m³): R$ ${fmtBRL(paul_L * vol)}`;
-    $('paulinia-total-1000').textContent = `Total (${vol} m³ × 1.000): R$ ${fmtBRL(paul_L * vol * 1000)}`;
+    $('paulinia-total').textContent = `Total (${vol} m³): R$ ${fmtBRL(paul_L * vol * 1000)}`;
 
     ['fob-block','paulinia-block'].forEach(id => {
       const el = $(id);

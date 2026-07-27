@@ -1,4 +1,4 @@
-const CACHE = 'royalfic-fob-gasolina-v3';
+const CACHE = 'royalfic-fob-gasolina-v4';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
