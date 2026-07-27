@@ -5,15 +5,15 @@
   "produtos": {
     "gasolina": {
       "nome": "Gasolina A",
-      "paulinia": 0
+      "paulinia": 5.75620
     },
     "s10": {
       "nome": "Diesel S10",
-      "paulinia": 0
+      "paulinia": 4.92140
     },
     "s500": {
       "nome": "Diesel S500",
-      "paulinia": 0
+      "paulinia": 4.85320
     }
   }
 }
