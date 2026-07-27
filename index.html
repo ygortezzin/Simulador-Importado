@@ -575,6 +575,23 @@
     </div>
   </div>
 
+  <!-- Comparativo Nacional -->
+  <div class="section" id="bombeio-section">
+    <div class="section-title">Comparativo — Produto Nacional (Bombeio Petrobras)</div>
+    <div class="row">
+      <div class="row-label"><span class="dot gray"></span> Bombeio Paulínia <small id="bombeio-data-ref"></small></div>
+      <div class="row-value blue" id="bombeio-valor">—</div>
+    </div>
+    <div class="row highlight">
+      <div class="row-label bold">Spread (Importado − Nacional)</div>
+      <div class="row-value" id="bombeio-spread">—</div>
+    </div>
+    <div class="row">
+      <div class="row-label"><span class="dot gray"></span> Total Nacional <small>(vol × 1.000)</small></div>
+      <div class="row-value" id="bombeio-total">—</div>
+    </div>
+  </div>
+
   <button class="btn-save" id="btn-save" onclick="salvarImagem()">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
     Salvar como imagem
@@ -864,6 +881,9 @@
       $('paulinia').textContent = '—';
       $('fob-total').textContent    = '';
       $('paulinia-total').textContent = '';
+      $('bombeio-valor').textContent  = '—';
+      $('bombeio-spread').textContent = '—';
+      $('bombeio-total').textContent  = '—';
       return;
     }
 
@@ -882,6 +902,8 @@
     $('fob-total').textContent = `Total (${vol} m³): R$ ${fmtBRL(fob_L * vol * 1000)}`;
     $('paulinia').textContent  = fmt(paul_L);
     $('paulinia-total').textContent = `Total (${vol} m³): R$ ${fmtBRL(paul_L * vol * 1000)}`;
+
+    atualizarComparativoBombeio(paul_L, vol);
 
     ['fob-block','paulinia-block'].forEach(id => {
       const el = $(id);
@@ -945,9 +967,54 @@
     btn.classList.toggle('negative', negative);
   });
 
+  // ── Comparativo com produto nacional (Bombeio Petrobras) ──
+  let bombeioData = null;
+
+  async function carregarBombeio() {
+    try {
+      // cache-buster garante que uma atualização na base seja refletida na hora
+      const resp = await fetch('./bombeio.json?t=' + Date.now(), { cache: 'no-store' });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      bombeioData = await resp.json();
+    } catch (e) {
+      bombeioData = null;
+      console.warn('Não foi possível carregar bombeio.json', e);
+    }
+    calc();
+  }
+
+  function atualizarComparativoBombeio(paul_L, vol) {
+    const produto = $('produto').value;
+    const info = bombeioData && bombeioData.produtos && bombeioData.produtos[produto];
+    const precoM3 = info ? Number(info.paulinia) : null;
+
+    $('bombeio-data-ref').textContent = bombeioData && bombeioData.atualizado_em
+      ? `(atualizado em ${bombeioData.atualizado_em})` : '';
+
+    if (!precoM3 || precoM3 <= 0) {
+      $('bombeio-valor').textContent  = 'sem dado';
+      $('bombeio-spread').textContent = '—';
+      $('bombeio-total').textContent  = '—';
+      return;
+    }
+
+    const bombeio_L = precoM3 / 1000; // base vem em R$/m³, simulador trabalha em R$/L
+    const spread     = paul_L - bombeio_L;
+    const spreadPct  = (spread / bombeio_L) * 100;
+    const spreadEl   = $('bombeio-spread');
+
+    $('bombeio-valor').textContent  = fmt(bombeio_L);
+    $('bombeio-total').textContent  = `R$ ${fmtBRL(bombeio_L * vol * 1000)}`;
+    spreadEl.textContent = `${spread >= 0 ? '+' : ''}${fmt(spread)}  (${spreadPct >= 0 ? '+' : ''}${spreadPct.toFixed(1)}%)`;
+    spreadEl.classList.toggle('warn', spread > 0);
+    spreadEl.classList.toggle('blue', spread <= 0);
+  }
+
   const inputs = ['rbob','fee','fx','custos','icms','pis','volume'];
   inputs.forEach(id => $(id).addEventListener('input', calc));
   // Não chama calc() no início — campos obrigatórios estão em branco
+
+  carregarBombeio();
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
