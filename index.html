@@ -547,8 +547,12 @@
       <input class="row-input" id="custos" type="number" value="0.1700" step="0.0001" />
     </div>
     <div class="row">
-      <div class="row-label"><span class="dot gray"></span> <span id="icms-label">ICMS / CIDE</span></div>
-      <input class="row-input" id="icms" type="number" value="2.4089" step="0.0001" />
+      <div class="row-label"><span class="dot gray"></span> <span id="icms-label">ICMS</span></div>
+      <input class="row-input" id="icms" type="number" value="2.3089" step="0.0001" />
+    </div>
+    <div class="row" id="cide-row">
+      <div class="row-label"><span class="dot gray"></span> CIDE</div>
+      <input class="row-input" id="cide" type="number" value="0.1000" step="0.0001" />
     </div>
     <div class="row">
       <div class="row-label"><span class="dot gray"></span> PIS / COFINS</div>
@@ -623,13 +627,14 @@
     const custos = parseFloat($('custos').value) || 0;
     const icms   = parseFloat($('icms').value)   || 0;
     const pis    = parseFloat($('pis').value)    || 0;
+    const cide   = parseFloat($('cide').value)   || 0;
     const volRaw = parseFloat($('volume').value);
     const vol    = (!isNaN(volRaw) && volRaw > 0) ? volRaw : 1;
 
     const total    = rbob + fee;
     const cbm      = total * 0.264172;
     const brl      = cbm * fx;
-    const encargos = custos + icms + pis;
+    const encargos = custos + icms + cide + pis;
     const fob_L    = brl + encargos;
     const paul_L   = fob_L + 0.10;
 
@@ -878,6 +883,7 @@
     const custos = parseFloat($('custos').value) || 0;
     const icms   = parseFloat($('icms').value)   || 0;
     const pis    = parseFloat($('pis').value)    || 0;
+    const cide   = parseFloat($('cide').value)   || 0;
     const volRaw = parseFloat($('volume').value);
     const vol    = (!isNaN(volRaw) && volRaw > 0) ? volRaw : 1;
 
@@ -912,7 +918,7 @@
     const total    = rbob + fee;
     const cbm      = total * 0.264172;
     const brl      = cbm * fx;
-    const encargos = custos + icms + pis;
+    const encargos = custos + icms + cide + pis;
     const fob_L    = brl + encargos;
     const paul_L   = fob_L + freteInfo.frete;
 
@@ -946,9 +952,11 @@
     // Troca label RBOB ↔ HO
     $('rbob-label').textContent = isGasolina ? 'RBOB' : 'HO';
 
-    // Troca label e valor ICMS/CIDE ↔ ICMS
-    $('icms-label').textContent = isGasolina ? 'ICMS / CIDE' : 'ICMS';
-    $('icms').value = isGasolina ? '2.4089' : '1.2388';
+    // ICMS é sempre exibido; CIDE é um tributo específico da Gasolina
+    $('icms-label').textContent = 'ICMS';
+    $('icms').value = isGasolina ? '2.3089' : '1.2388';
+    $('cide-row').style.display = isGasolina ? '' : 'none';
+    $('cide').value = isGasolina ? '0.1000' : '0';
 
     // Atualiza PIS/COFINS conforme produto
     $('pis').value = isGasolina ? '0.7925' : '0.3515';
@@ -1087,7 +1095,7 @@
     spreadEl.classList.toggle('blue', spread <= 0);
   }
 
-  const inputs = ['rbob','fee','fx','custos','icms','pis','volume'];
+  const inputs = ['rbob','fee','fx','custos','icms','cide','pis','volume'];
   inputs.forEach(id => $(id).addEventListener('input', calc));
   // Não chama calc() no início — campos obrigatórios estão em branco
 

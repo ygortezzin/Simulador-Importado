@@ -1,4 +1,4 @@
-const CACHE = 'royalfic-fob-gasolina-v8';
+const CACHE = 'royalfic-fob-gasolina-v10';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 const BASES_DINAMICAS = ['bombeio.xlsx', 'frete.xlsx'];
 
